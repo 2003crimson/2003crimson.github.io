@@ -515,7 +515,6 @@
         let shakeCount = 1;
         let isShaking = false;
         const containerWidth = 400;
-        const containerHeight = 550;
         const gravity = 0.3;
         const friction = 0.98;
         const bounce = 0.3;
@@ -639,6 +638,10 @@
 
         function updatePhysics() {
             if (isGameOver) return;
+
+            // 动态获取游戏区域尺寸
+            const containerWidth = gameArea.offsetWidth;
+            const containerHeight = gameArea.offsetHeight;
 
             for (let i = 0; i < foods.length; i++) {
                 const food = foods[i];
