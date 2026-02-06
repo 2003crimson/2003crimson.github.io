@@ -17,7 +17,7 @@
 
 ## 🚀 在线体验
 
-访问 GitHub Pages: [[https://username.github.io/AiCode/](https://2003crimson.github.io/hecheng/)](https://2003crimson.github.io/hecheng/)
+访问 GitHub Pages: [https://2003crimson.github.io/year-end-dinner.html](https://2003crimson.github.io/year-end-dinner.html)
 
 ## 📝 开发
 
