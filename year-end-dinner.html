@@ -223,6 +223,74 @@
             transform: scale(1.05);
         }
 
+        .confirm-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #2d3436;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 300;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            max-width: 320px;
+        }
+
+        .confirm-dialog h3 {
+            font-size: 1.5em;
+            color: #d63031;
+            margin-bottom: 15px;
+        }
+
+        .confirm-dialog p {
+            font-size: 1em;
+            color: #636e72;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .confirm-dialog .warning {
+            color: #e17055;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .confirm-dialog .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-dialog button {
+            padding: 10px 25px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-dialog .confirm-btn {
+            background: #d63031;
+            color: white;
+        }
+
+        .confirm-dialog .confirm-btn:hover {
+            background: #ff6b6b;
+        }
+
+        .confirm-dialog .cancel-btn {
+            background: #b2bec3;
+            color: white;
+        }
+
+        .confirm-dialog .cancel-btn:hover {
+            background: #636e72;
+        }
+
         .guide {
             text-align: center;
             margin: 12px 0;
@@ -271,6 +339,16 @@
                 <h2>游戏结束！</h2>
                 <p>最终得分: <span id="finalScore">0</span></p>
                 <button onclick="restartGame()">重新开始</button>
+            </div>
+            <div class="confirm-dialog" id="confirmDialog">
+                <h3>🥄 颠勺</h3>
+                <p><strong>功能说明：</strong></p>
+                <p>将所有食物向上抛起，帮助调整布局</p>
+                <p class="warning">⚠️ 每局游戏仅可使用 1 次</p>
+                <div class="buttons">
+                    <button class="cancel-btn" onclick="closeConfirmDialog()">取消</button>
+                    <button class="confirm-btn" onclick="confirmUseShake()">使用</button>
+                </div>
             </div>
         </div>
 
@@ -339,6 +417,7 @@
         const finalScoreElement = document.getElementById('finalScore');
         const shakeBtn = document.getElementById('shakeBtn');
         const shakeCountElement = document.getElementById('shakeCount');
+        const confirmDialog = document.getElementById('confirmDialog');
 
         const FOODS = [
             { emoji: '🥟', name: '饺子', size: 40, score: 1 },
@@ -377,6 +456,7 @@
             updateNextItem();
             updateShakeButton();
             gameOverElement.style.display = 'none';
+            confirmDialog.style.display = 'none';
 
             // 清除所有食物元素
             document.querySelectorAll('.food').forEach(el => el.remove());
@@ -397,6 +477,19 @@
 
         function useShakeTool() {
             if (shakeCount <= 0 || isGameOver) return;
+            showConfirmDialog();
+        }
+
+        function showConfirmDialog() {
+            confirmDialog.style.display = 'block';
+        }
+
+        function closeConfirmDialog() {
+            confirmDialog.style.display = 'none';
+        }
+
+        function confirmUseShake() {
+            closeConfirmDialog();
 
             shakeCount--;
             updateShakeButton();
