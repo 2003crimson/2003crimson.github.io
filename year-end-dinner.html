@@ -429,7 +429,7 @@
             <div class="game-over" id="gameOver">
                 <h2>游戏结束！</h2>
                 <p>最终得分: <span id="finalScore">0</span></p>
-                <button onclick="restartGame()">重新开始</button>
+                <button onclick="restartGame(event)">重新开始</button>
             </div>
             <div class="confirm-dialog" id="confirmDialog">
                 <h3>🥄 颠勺</h3>
@@ -830,15 +830,20 @@
             gameOverElement.style.display = 'block';
         }
 
-        function restartGame() {
+        function restartGame(event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
             init();
         }
 
         // 事件监听
         // 处理点击事件（桌面端）
         gameArea.addEventListener('click', (e) => {
-            // 如果确认对话框打开，不投放食物
+            // 如果确认对话框或游戏结束对话框打开，不投放食物
             if (confirmDialog.style.display === 'block') return;
+            if (gameOverElement.style.display === 'block') return;
 
             const rect = gameArea.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -847,8 +852,9 @@
 
         // 处理触摸事件（移动端）
         gameArea.addEventListener('touchstart', (e) => {
-            // 如果确认对话框打开，不投放食物
+            // 如果确认对话框或游戏结束对话框打开，不投放食物
             if (confirmDialog.style.display === 'block') return;
+            if (gameOverElement.style.display === 'block') return;
 
             // 防止触摸事件同时触发 click 事件
             e.preventDefault();
