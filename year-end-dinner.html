@@ -705,6 +705,9 @@
 
         // 事件监听
         gameArea.addEventListener('click', (e) => {
+            // 如果确认对话框打开，不投放食物
+            if (confirmDialog.style.display === 'block') return;
+
             const rect = gameArea.getBoundingClientRect();
             const x = e.clientX - rect.left;
             dropFood(x);
