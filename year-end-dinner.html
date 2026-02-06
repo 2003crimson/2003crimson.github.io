@@ -661,11 +661,18 @@
         function dropFood(x) {
             if (isGameOver) return;
 
-            // 检查投放区域是否有食物，防止快速点击导致堆积
+            // 检查投放区域是否有稳定的食物，防止快速点击导致堆积
+            // 使用与游戏结束判定相同的逻辑：位置在顶部且速度很小
+            let stableTopFoodCount = 0;
             for (const food of foods) {
-                if (food.y < 80) { // 虚线区域（60px）上方
-                    return; // 有食物，不允许投放
+                if (food.y - food.size / 2 < 60 && Math.abs(food.vy) < 0.5 && Math.abs(food.vx) < 0.5) {
+                    stableTopFoodCount++;
                 }
+            }
+
+            // 如果顶部已有2个或更多稳定食物，阻止投放（避免在游戏即将结束时继续投放）
+            if (stableTopFoodCount >= 2) {
+                return;
             }
 
             const y = 30;
