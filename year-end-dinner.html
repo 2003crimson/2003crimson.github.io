@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合成年夜饭</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #d63031;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .score {
+            font-size: 1.5em;
+            color: #e17055;
+            margin: 10px 0;
+        }
+
+        .score span {
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        .game-area {
+            position: relative;
+            width: 400px;
+            height: 550px;
+            border: 4px solid #d63031;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #fff5f5 0%, #ffe8e8 100%);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .next-item {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background: rgba(214, 48, 49, 0.9);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.9em;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .line {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(214, 48, 49, 0.5);
+            border-top: 2px dashed #d63031;
+        }
+
+        .food {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .food:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .food.merging {
+            animation: merge 0.3s ease-out;
+        }
+
+        @keyframes merge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            z-index: 200;
+        }
+
+        .game-over h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+
+        .game-over p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .game-over button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: #d63031;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .game-over button:hover {
+            background: #ff6b6b;
+            transform: scale(1.05);
+        }
+
+        .guide {
+            text-align: center;
+            margin-top: 15px;
+            color: #636e72;
+            font-size: 0.9em;
+        }
+
+        .food-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .food-list-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8em;
+        }
+
+        .food-list-item .emoji {
+            font-size: 1.5em;
+        }
+
+        .food-list-item .name {
+            color: #636e72;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🧧 合成年夜饭 🧧</h1>
+            <div class="score">得分: <span id="score">0</span></div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <div class="next-item" id="nextItem">下一个: 🥟</div>
+            <div class="line"></div>
+            <div class="game-over" id="gameOver">
+                <h2>游戏结束！</h2>
+                <p>最终得分: <span id="finalScore">0</span></p>
+                <button onclick="restartGame()">重新开始</button>
+            </div>
+        </div>
+
+        <div class="guide">点击上方区域投放食物，相同食物会合成更大的年夜饭！</div>
+
+        <div class="food-list">
+            <div class="food-list-item">
+                <span class="emoji">🥟</span>
+                <span class="name">饺子</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🥙</span>
+                <span class="name">春卷</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🍖</span>
+                <span class="name">红烧肉</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🐟</span>
+                <span class="name">清蒸鱼</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🦐</span>
+                <span class="name">大虾</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🦀</span>
+                <span class="name">螃蟹</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🥘</span>
+                <span class="name">火锅</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🦞</span>
+                <span class="name">龙虾</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🦆</span>
+                <span class="name">烤鸭</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🍲</span>
+                <span class="name">佛跳墙</span>
+            </div>
+            <div class="food-list-item">
+                <span class="emoji">🥡</span>
+                <span class="name">满汉全席</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const scoreElement = document.getElementById('score');
+        const nextItemElement = document.getElementById('nextItem');
+        const gameOverElement = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+
+        const FOODS = [
+            { emoji: '🥟', name: '饺子', size: 40, score: 1 },
+            { emoji: '🥙', name: '春卷', size: 50, score: 3 },
+            { emoji: '🍖', name: '红烧肉', size: 60, score: 6 },
+            { emoji: '🐟', name: '清蒸鱼', size: 70, score: 10 },
+            { emoji: '🦐', name: '大虾', size: 80, score: 15 },
+            { emoji: '🦀', name: '螃蟹', size: 90, score: 21 },
+            { emoji: '🥘', name: '火锅', size: 100, score: 28 },
+            { emoji: '🦞', name: '龙虾', size: 110, score: 36 },
+            { emoji: '🦆', name: '烤鸭', size: 120, score: 45 },
+            { emoji: '🍲', name: '佛跳墙', size: 130, score: 55 },
+            { emoji: '🥡', name: '满汉全席', size: 145, score: 66 }
+        ];
+
+        let foods = [];
+        let score = 0;
+        let nextFoodIndex = 0;
+        let isGameOver = false;
+        let mouseX = 200;
+        const containerWidth = 400;
+        const containerHeight = 550;
+        const gravity = 0.3;
+        const friction = 0.98;
+        const bounce = 0.3;
+
+        function init() {
+            foods = [];
+            score = 0;
+            isGameOver = false;
+            nextFoodIndex = Math.floor(Math.random() * 5);
+            updateScore();
+            updateNextItem();
+            gameOverElement.style.display = 'none';
+
+            // 清除所有食物元素
+            document.querySelectorAll('.food').forEach(el => el.remove());
+        }
+
+        function updateScore() {
+            scoreElement.textContent = score;
+        }
+
+        function updateNextItem() {
+            nextItemElement.textContent = `下一个: ${FOODS[nextFoodIndex].emoji}`;
+        }
+
+        function createFood(x, y, foodIndex) {
+            const food = FOODS[foodIndex];
+            const foodElement = document.createElement('div');
+            foodElement.className = 'food';
+            foodElement.style.width = food.size + 'px';
+            foodElement.style.height = food.size + 'px';
+            foodElement.style.fontSize = (food.size * 0.5) + 'px';
+            foodElement.textContent = food.emoji;
+            foodElement.style.left = (x - food.size / 2) + 'px';
+            foodElement.style.top = (y - food.size / 2) + 'px';
+            foodElement.style.background = getFoodColor(foodIndex);
+            gameArea.appendChild(foodElement);
+
+            return {
+                element: foodElement,
+                x: x,
+                y: y,
+                vx: 0,
+                vy: 0,
+                size: food.size,
+                index: foodIndex
+            };
+        }
+
+        function getFoodColor(index) {
+            const colors = [
+                '#ffeaa7', '#fab1a0', '#ff7675', '#fd79a8',
+                '#a29bfe', '#74b9ff', '#81ecec', '#00cec9',
+                '#55efc4', '#00b894', '#fdcb6e'
+            ];
+            return colors[index] || '#ffeaa7';
+        }
+
+        function dropFood(x) {
+            if (isGameOver) return;
+
+            const y = 30;
+            const food = createFood(x, y, nextFoodIndex);
+            foods.push(food);
+            food.vy = 2;
+
+            nextFoodIndex = Math.floor(Math.random() * 5);
+            updateNextItem();
+        }
+
+        function updatePhysics() {
+            if (isGameOver) return;
+
+            for (let i = 0; i < foods.length; i++) {
+                const food = foods[i];
+
+                // 应用重力
+                food.vy += gravity;
+                food.vx *= friction;
+
+                // 更新位置
+                food.x += food.vx;
+                food.y += food.vy;
+
+                // 边界碰撞
+                if (food.x - food.size / 2 < 0) {
+                    food.x = food.size / 2;
+                    food.vx = -food.vx * bounce;
+                }
+                if (food.x + food.size / 2 > containerWidth) {
+                    food.x = containerWidth - food.size / 2;
+                    food.vx = -food.vx * bounce;
+                }
+                if (food.y + food.size / 2 > containerHeight) {
+                    food.y = containerHeight - food.size / 2;
+                    food.vy = -food.vy * bounce;
+                    food.vx *= 0.8;
+                }
+
+                // 更新元素位置
+                food.element.style.left = (food.x - food.size / 2) + 'px';
+                food.element.style.top = (food.y - food.size / 2) + 'px';
+            }
+
+            // 碰撞检测和合并
+            checkCollisions();
+
+            // 检查游戏结束
+            checkGameOver();
+        }
+
+        function checkCollisions() {
+            for (let i = 0; i < foods.length; i++) {
+                for (let j = i + 1; j < foods.length; j++) {
+                    const food1 = foods[i];
+                    const food2 = foods[j];
+
+                    const dx = food2.x - food1.x;
+                    const dy = food2.y - food1.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const minDistance = (food1.size + food2.size) / 2;
+
+                    if (distance < minDistance) {
+                        // 相同类型食物合并
+                        if (food1.index === food2.index && food1.index < FOODS.length - 1) {
+                            mergeFoods(i, j);
+                            return;
+                        }
+
+                        // 不同类型食物碰撞
+                        const angle = Math.atan2(dy, dx);
+                        const overlap = minDistance - distance;
+
+                        const moveX = (overlap / 2) * Math.cos(angle);
+                        const moveY = (overlap / 2) * Math.sin(angle);
+
+                        food1.x -= moveX;
+                        food1.y -= moveY;
+                        food1.vx -= moveX * 0.5;
+                        food1.vy -= moveY * 0.5;
+
+                        food2.x += moveX;
+                        food2.y += moveY;
+                        food2.vx += moveX * 0.5;
+                        food2.vy += moveY * 0.5;
+                    }
+                }
+            }
+        }
+
+        function mergeFoods(index1, index2) {
+            const food1 = foods[index1];
+            const food2 = foods[index2];
+            const newIndex = food1.index + 1;
+
+            // 移除旧食物
+            food1.element.remove();
+            food2.element.remove();
+
+            // 计算新位置（在两个食物中间）
+            const newX = (food1.x + food2.x) / 2;
+            const newY = (food1.y + food2.y) / 2;
+
+            // 创建新食物
+            const newFood = createFood(newX, newY, newIndex);
+            newFood.vy = -2;
+            foods.push(newFood);
+
+            // 从数组中移除旧食物
+            foods.splice(index2, 1);
+            foods.splice(index1, 1);
+
+            // 加分
+            score += FOODS[food1.index].score * 2;
+            updateScore();
+
+            // 添加合并动画
+            newFood.element.classList.add('merging');
+            setTimeout(() => {
+                newFood.element.classList.remove('merging');
+            }, 300);
+        }
+
+        function checkGameOver() {
+            // 统计顶部区域的食物数量
+            let topFoodCount = 0;
+            for (const food of foods) {
+                // 如果食物在顶部区域（超过虚线）且速度很小
+                if (food.y - food.size / 2 < 60 && Math.abs(food.vy) < 0.5 && Math.abs(food.vx) < 0.5) {
+                    topFoodCount++;
+                }
+            }
+
+            // 如果有3个或更多食物在顶部稳定，游戏结束
+            if (topFoodCount >= 3 && foods.length > 3) {
+                gameOver();
+            }
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            finalScoreElement.textContent = score;
+            gameOverElement.style.display = 'block';
+        }
+
+        function restartGame() {
+            init();
+        }
+
+        // 事件监听
+        gameArea.addEventListener('click', (e) => {
+            const rect = gameArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            dropFood(x);
+        });
+
+        gameArea.addEventListener('mousemove', (e) => {
+            const rect = gameArea.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+        });
+
+        // 游戏循环
+        function gameLoop() {
+            updatePhysics();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 初始化游戏
+        init();
+        gameLoop();
+    </script>
+</body>
+</html>
