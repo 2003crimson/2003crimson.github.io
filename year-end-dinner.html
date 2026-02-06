@@ -532,6 +532,8 @@
         let mouseX = 200;
         let shakeCount = 1;
         let isShaking = false;
+        let lastDropTime = 0; // 上次投放时间
+        const dropCooldown = 500; // 投放冷却时间（毫秒）
         const containerWidth = 400;
         const friction = 0.98;
         const bounce = 0.3;
@@ -661,15 +663,13 @@
         function dropFood(x) {
             if (isGameOver) return;
 
-            // 检查虚线上方区域是否有任何食物，防止快速点击导致上方堆积
-            // 虚线位置在 y=60，检查食物底部（y + size/2）是否在虚线上方
-            for (const food of foods) {
-                const foodBottom = food.y + food.size / 2;
-                // 如果食物底部还在虚线上方（y < 65，留一些余量），不允许投放
-                if (foodBottom < 65) {
-                    return;
-                }
+            // 检查投放冷却时间，防止快速连点
+            const currentTime = Date.now();
+            if (currentTime - lastDropTime < dropCooldown) {
+                return; // 冷却中，不允许投放
             }
+
+            lastDropTime = currentTime;
 
             const y = 30;
             const food = createFood(x, y, nextFoodIndex);
