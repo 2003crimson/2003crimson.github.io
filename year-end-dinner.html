@@ -351,6 +351,7 @@
         let isGameOver = false;
         let mouseX = 200;
         let shakeCount = 1;
+        let isShaking = false;
         const containerWidth = 400;
         const containerHeight = 550;
         const gravity = 0.3;
@@ -390,6 +391,12 @@
 
             shakeCount--;
             updateShakeButton();
+
+            // 设置颠勺冷却期，防止误判游戏结束
+            isShaking = true;
+            setTimeout(() => {
+                isShaking = false;
+            }, 2000);
 
             // 给所有食物添加随机向上的速度，产生震动效果
             for (const food of foods) {
@@ -566,6 +573,9 @@
         }
 
         function checkGameOver() {
+            // 颠勺期间暂停游戏结束检测
+            if (isShaking) return;
+
             // 统计顶部区域的食物数量
             let topFoodCount = 0;
             for (const food of foods) {
