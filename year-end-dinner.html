@@ -54,22 +54,27 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin: 10px 0;
+            margin: 5px 0 15px 0;
         }
 
         .tool-btn {
-            padding: 10px 20px;
-            font-size: 1em;
-            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            padding: 8px 16px;
+            font-size: 0.9em;
+            background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-btn .tooltip {
+            font-size: 0.8em;
+            opacity: 0.8;
         }
 
         .tool-btn:hover:not(:disabled) {
@@ -249,11 +254,6 @@
         <div class="header">
             <h1>🧧 合成年夜饭 🧧</h1>
             <div class="score">得分: <span id="score">0</span></div>
-            <div class="tool-container">
-                <button class="tool-btn" id="shakeBtn" onclick="useShakeTool()">
-                    🥄 颠勺 <span class="count" id="shakeCount">1</span>
-                </button>
-            </div>
         </div>
 
         <div class="game-area" id="gameArea">
@@ -267,6 +267,12 @@
         </div>
 
         <div class="guide">点击上方区域投放食物，相同食物会合成更大的年夜饭！</div>
+
+        <div class="tool-container">
+            <button class="tool-btn" id="shakeBtn" onclick="useShakeTool()">
+                💫 紧急道具: 颠勺 (剩余<span class="count" id="shakeCount">1</span>次)
+            </button>
+        </div>
 
         <div class="food-list">
             <div class="food-list-item">
