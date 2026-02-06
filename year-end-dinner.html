@@ -544,6 +544,7 @@
             isGameOver = false;
             nextFoodIndex = Math.floor(Math.random() * 5);
             shakeCount = 1;
+            lastDropTime = 0; // 重置投放冷却时间
             updateScore();
             updateNextItem();
             updateShakeButton();
