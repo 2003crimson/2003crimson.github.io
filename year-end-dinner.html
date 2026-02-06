@@ -515,7 +515,6 @@
         let shakeCount = 1;
         let isShaking = false;
         const containerWidth = 400;
-        const gravity = 0.3;
         const friction = 0.98;
         const bounce = 0.3;
 
@@ -627,10 +626,20 @@
         function dropFood(x) {
             if (isGameOver) return;
 
+            // 检查投放区域是否有食物，防止快速点击导致堆积
+            for (const food of foods) {
+                if (food.y < 80) { // 虚线区域（60px）上方
+                    return; // 有食物，不允许投放
+                }
+            }
+
             const y = 30;
             const food = createFood(x, y, nextFoodIndex);
             foods.push(food);
-            food.vy = 2;
+
+            // 根据设备类型设置不同的初始速度
+            const isMobile = window.innerWidth <= 420;
+            food.vy = isMobile ? 2 : 4;
 
             nextFoodIndex = Math.floor(Math.random() * 5);
             updateNextItem();
@@ -643,6 +652,9 @@
             const containerWidth = gameArea.offsetWidth;
             const containerHeight = gameArea.offsetHeight;
             const borderWidth = 4; // 边框宽度
+            // 根据设备类型使用不同的重力
+            const isMobile = window.innerWidth <= 420;
+            const gravity = isMobile ? 0.3 : 0.7;
 
             for (let i = 0; i < foods.length; i++) {
                 const food = foods[i];
