@@ -152,6 +152,14 @@
             transition: box-shadow 0.2s;
             user-select: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .food img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
         }
 
         .food:hover {
@@ -322,6 +330,13 @@
             font-size: 1.5em;
         }
 
+        .food-list-item .food-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         .food-list-item .name {
             color: #636e72;
             margin-top: 5px;
@@ -407,7 +422,9 @@
         </div>
 
         <div class="game-area" id="gameArea">
-            <div class="next-item" id="nextItem">下一个: 🥟</div>
+            <div class="next-item" id="nextItem">
+                下一个: <span id="nextItemContent"></span>
+            </div>
             <div class="line"></div>
             <div class="game-over" id="gameOver">
                 <h2>游戏结束！</h2>
@@ -437,48 +454,48 @@
 
         <div class="food-list">
             <div class="food-list-item">
-                <span class="emoji">🥟</span>
+                <img class="food-icon" src="pic/jiaozi.png" alt="饺子">
                 <span class="name">饺子</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🥙</span>
+                <img class="food-icon" src="pic/tangyuan.png" alt="汤圆">
+                <span class="name">汤圆</span>
+            </div>
+            <div class="food-list-item">
+                <img class="food-icon" src="pic/chunjuan.png" alt="春卷">
                 <span class="name">春卷</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🍖</span>
-                <span class="name">红烧肉</span>
+                <img class="food-icon" src="pic/luyu.png" alt="清蒸鲈鱼">
+                <span class="name">清蒸鲈鱼</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🐟</span>
-                <span class="name">清蒸鱼</span>
+                <img class="food-icon" src="pic/hongshaorou.png" alt="东坡肉">
+                <span class="name">东坡肉</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🦐</span>
-                <span class="name">大虾</span>
+                <img class="food-icon" src="pic/babao.png" alt="八宝饭">
+                <span class="name">八宝饭</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🦀</span>
-                <span class="name">螃蟹</span>
+                <img class="food-icon" src="pic/ji.png" alt="白切鸡">
+                <span class="name">白切鸡</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🥘</span>
-                <span class="name">火锅</span>
+                <img class="food-icon" src="pic/pangxie.png" alt="大闸蟹">
+                <span class="name">大闸蟹</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🦞</span>
-                <span class="name">龙虾</span>
+                <img class="food-icon" src="pic/longxia.png" alt="清蒸龙虾">
+                <span class="name">清蒸龙虾</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🦆</span>
-                <span class="name">烤鸭</span>
+                <img class="food-icon" src="pic/baozhi.png" alt="鲍鱼捞饭">
+                <span class="name">鲍鱼捞饭</span>
             </div>
             <div class="food-list-item">
-                <span class="emoji">🍲</span>
+                <img class="food-icon" src="pic/fotiaoqiang.png" alt="佛跳墙">
                 <span class="name">佛跳墙</span>
-            </div>
-            <div class="food-list-item">
-                <span class="emoji">🥡</span>
-                <span class="name">满汉全席</span>
             </div>
         </div>
     </div>
@@ -487,6 +504,7 @@
         const gameArea = document.getElementById('gameArea');
         const scoreElement = document.getElementById('score');
         const nextItemElement = document.getElementById('nextItem');
+        const nextItemContent = document.getElementById('nextItemContent');
         const gameOverElement = document.getElementById('gameOver');
         const finalScoreElement = document.getElementById('finalScore');
         const shakeBtn = document.getElementById('shakeBtn');
@@ -494,17 +512,17 @@
         const confirmDialog = document.getElementById('confirmDialog');
 
         const FOODS = [
-            { emoji: '🥟', name: '饺子', size: 40, score: 1 },
-            { emoji: '🥙', name: '春卷', size: 50, score: 3 },
-            { emoji: '🍖', name: '红烧肉', size: 60, score: 6 },
-            { emoji: '🐟', name: '清蒸鱼', size: 70, score: 10 },
-            { emoji: '🦐', name: '大虾', size: 80, score: 15 },
-            { emoji: '🦀', name: '螃蟹', size: 90, score: 21 },
-            { emoji: '🥘', name: '火锅', size: 100, score: 28 },
-            { emoji: '🦞', name: '龙虾', size: 110, score: 36 },
-            { emoji: '🦆', name: '烤鸭', size: 120, score: 45 },
-            { emoji: '🍲', name: '佛跳墙', size: 130, score: 55 },
-            { emoji: '🥡', name: '满汉全席', size: 145, score: 66 }
+            { emoji: '🥟', image: 'pic/jiaozi.png', name: '饺子', size: 40, score: 1 },
+            { emoji: '🥙', image: 'pic/tangyuan.png', name: '汤圆', size: 50, score: 3 },
+            { emoji: '🥙', image: 'pic/chunjuan.png', name: '春卷', size: 60, score: 6 },
+            { emoji: '🐟', image: 'pic/luyu.png', name: '清蒸鲈鱼', size: 70, score: 10 },
+            { emoji: '🍖', image: 'pic/hongshaorou.png', name: '东坡肉', size: 80, score: 15 },
+            { emoji: '🥘', image: 'pic/babao.png', name: '八宝饭', size: 90, score: 21 },
+            { emoji: '🍗', image: 'pic/ji.png', name: '白切鸡', size: 100, score: 28 },
+            { emoji: '🦀', image: 'pic/pangxie.png', name: '大闸蟹', size: 110, score: 36 },
+            { emoji: '🦞', image: 'pic/longxia.png', name: '清蒸龙虾', size: 120, score: 45 },
+            { emoji: '🍚', image: 'pic/baozhi.png', name: '鲍鱼捞饭', size: 130, score: 55 },
+            { emoji: '🍲', image: 'pic/fotiaoqiang.png', name: '佛跳墙', size: 145, score: 66 }
         ];
 
         let foods = [];
@@ -539,7 +557,20 @@
         }
 
         function updateNextItem() {
-            nextItemElement.textContent = `下一个: ${FOODS[nextFoodIndex].emoji}`;
+            const food = FOODS[nextFoodIndex];
+            nextItemContent.innerHTML = '';
+
+            // 创建小预览图
+            const img = document.createElement('img');
+            img.src = food.image;
+            img.alt = food.name;
+            img.style.width = '24px';
+            img.style.height = '24px';
+            img.style.objectFit = 'cover';
+            img.style.verticalAlign = 'middle';
+            img.style.borderRadius = '50%';
+
+            nextItemContent.appendChild(img);
         }
 
         function updateShakeButton() {
@@ -596,11 +627,15 @@
             foodElement.className = 'food';
             foodElement.style.width = food.size + 'px';
             foodElement.style.height = food.size + 'px';
-            foodElement.style.fontSize = (food.size * 0.5) + 'px';
-            foodElement.textContent = food.emoji;
             foodElement.style.left = (x - food.size / 2) + 'px';
             foodElement.style.top = (y - food.size / 2) + 'px';
-            foodElement.style.background = getFoodColor(foodIndex);
+
+            // 添加图片元素
+            const img = document.createElement('img');
+            img.src = food.image;
+            img.alt = food.name;
+            foodElement.appendChild(img);
+
             gameArea.appendChild(foodElement);
 
             return {
