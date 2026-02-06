@@ -834,6 +834,7 @@
         }
 
         // 事件监听
+        // 处理点击事件（桌面端）
         gameArea.addEventListener('click', (e) => {
             // 如果确认对话框打开，不投放食物
             if (confirmDialog.style.display === 'block') return;
@@ -842,6 +843,20 @@
             const x = e.clientX - rect.left;
             dropFood(x);
         });
+
+        // 处理触摸事件（移动端）
+        gameArea.addEventListener('touchstart', (e) => {
+            // 如果确认对话框打开，不投放食物
+            if (confirmDialog.style.display === 'block') return;
+
+            // 防止触摸事件同时触发 click 事件
+            e.preventDefault();
+
+            const rect = gameArea.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            dropFood(x);
+        }, { passive: false });
 
         gameArea.addEventListener('mousemove', (e) => {
             const rect = gameArea.getBoundingClientRect();
