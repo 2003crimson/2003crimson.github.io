@@ -639,9 +639,10 @@
         function updatePhysics() {
             if (isGameOver) return;
 
-            // 动态获取游戏区域尺寸
+            // 动态获取游戏区域尺寸，预留边框空间
             const containerWidth = gameArea.offsetWidth;
             const containerHeight = gameArea.offsetHeight;
+            const borderWidth = 4; // 边框宽度
 
             for (let i = 0; i < foods.length; i++) {
                 const food = foods[i];
@@ -654,7 +655,7 @@
                 food.x += food.vx;
                 food.y += food.vy;
 
-                // 边界碰撞
+                // 边界碰撞（预留边框空间避免被截断）
                 if (food.x - food.size / 2 < 0) {
                     food.x = food.size / 2;
                     food.vx = -food.vx * bounce;
@@ -663,8 +664,8 @@
                     food.x = containerWidth - food.size / 2;
                     food.vx = -food.vx * bounce;
                 }
-                if (food.y + food.size / 2 > containerHeight) {
-                    food.y = containerHeight - food.size / 2;
+                if (food.y + food.size / 2 > containerHeight - borderWidth) {
+                    food.y = containerHeight - borderWidth - food.size / 2;
                     food.vy = -food.vy * bounce;
                     food.vx *= 0.8;
                 }
