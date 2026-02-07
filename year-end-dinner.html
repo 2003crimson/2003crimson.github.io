@@ -678,7 +678,7 @@
 
             // 根据设备类型设置不同的初始速度
             const isMobile = window.innerWidth <= 420;
-            food.vy = isMobile ? 2 : 4;
+            food.vy = isMobile ? 2 : 2;
 
             nextFoodIndex = Math.floor(Math.random() * 5);
             updateNextItem();
@@ -693,7 +693,7 @@
             const borderWidth = 4; // 边框宽度
             // 根据设备类型使用不同的重力
             const isMobile = window.innerWidth <= 420;
-            const gravity = isMobile ? 0.3 : 0.7;
+            const gravity = isMobile ? 0.3 : 0.4;
 
             for (let i = 0; i < foods.length; i++) {
                 const food = foods[i];
